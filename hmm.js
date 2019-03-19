@@ -4,31 +4,31 @@ const stream = fs.createReadStream("data2.csv");
 
 var selectedFlight = [];
 var badData = [];
-var bPassangers = [];
-var coachPassangers = [];
+var businessPassengers = [];
+var coachPassengers = [];
 
 csv
  .fromStream(stream, {ignoreEmpty: true, headers : true})
  .validate(function(data){
-     // conditipns for nationality and name 
+     // conditions for nationality and name 
     if(!data.first_name || !data.second_name || !data.nationality){
         let badDatas = data
         badData.push(badDatas);
     };
-    let newObj;
-    destination = data.flight_destination == "JFK";
+    // destination receives input in the terminal, but must match the data file
+    destination = data.flight_destination === process.argv[2];
     // forbidden objects
-    if(!data.objects.includes("sombrero", "water", "soap", "batteries", "firearm") && destination && data.nationality && data.first_name && data.second_name){ 
-        newObj = data;
+    if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){ 
+        // use different method watermelon 
+        let newObj = data;
         selectedFlight.push(newObj)
         // object that stores all the passangers that match 
-     } else if(data.objects.includes("parrot" && destination)){
+     } else if(data.objects.includes("parrot") && destination){
         // exception - if they carry a parrot along with any of the forbidden objects -- allowed
         let nextObj = data
         selectedFlight.push(nextObj)
-     };
-     // exception - if they carry only a sombrero and are mexicans going to JFK -- allowed
-     if(data.objects == "sombrero" && data.nationality == "Mexican" && destination ){
+        // exception - if they carry only a sombrero and are mexicans going to JFK -- allowed
+     } else if(data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && data.nationality == "Mexican" && destination ){
         selectedFlight.push(data);
      }; 
 })
@@ -38,12 +38,14 @@ csv
  .on("data", function (){
 })
  .on("end", function(){
-    addGreeting();
+    addGreeting(); // pair with seating app
     separatePassangers();
     seatingAppForBusiness();
     seatingAppForTheRest();
-    allPassangers = bPassangers.concat(coachPassangers);
+    allPassangers = businessPassengers.concat(coachPassengers);
     printMap();
+    //console.log(allPassangers)
+    console.log(selectedFlight)
    
  });
 
@@ -162,34 +164,34 @@ let separatePassangers = () => {
     for (i = 0; i < selectedFlight.length; i++ ){
         if(selectedFlight[i].is_business === "true") {
             let bPass = selectedFlight[i];
-            bPassangers.push(bPass);
+            businessPassengers.push(bPass);
         } else if(selectedFlight[i].is_business === "false"){
             let coachPass = selectedFlight[i];
-            coachPassangers.push(coachPass);
+            coachPassengers.push(coachPass);
         };
     }; 
 };
 
 // assign seats to business passangers
 let seatingAppForBusiness = () => {
-    for(i = 0, j = 0; j < seatingForBusinessWithoutMiddleSeat.length, i < bPassangers.length; j++, i++){
-        if(bPassangers[i].is_business === "true" ){
-            bPassangers[i].seat = seatingForBusinessWithoutMiddleSeat[j];
+    for(i = 0, j = 0; j < seatingForBusinessWithoutMiddleSeat.length, i < businessPassengers.length; j++, i++){
+        if(businessPassengers[i].is_business === "true" ){
+            businessPassengers[i].seat = seatingForBusinessWithoutMiddleSeat[j];
         };
-        console.log(bPassangers[i].first_name + " "  + bPassangers[i].second_name + " A LA " + bPassangers[i].seat)
+        console.log(businessPassengers[i].first_name + " "  + businessPassengers[i].second_name + " A LA " + businessPassengers[i].seat)
     };
 };
 
 // assign seats to coach passangers
 let seatingAppForTheRest = () => {
-    for(l = 0, k = 0, m = 0; k < seatingForTheRestReversed.length, m < middleSeatsOnly.length, l < coachPassangers.length; k++, l++, m++){
-        if(coachPassangers[l].is_business === "false" && coachPassangers[l].favorite_team === "RM" ){
+    for(l = 0, k = 0, m = 0; k < seatingForTheRestReversed.length, m < middleSeatsOnly.length, l < coachPassengers.length; k++, l++, m++){
+        if(coachPassengers[l].is_business === "false" && coachPassengers[l].favorite_team === "RM" ){
             // if coach passangers are RM fans, must sit in middle seats
-            coachPassangers[l].seat = middleSeatsOnly[m];
+            coachPassengers[l].seat = middleSeatsOnly[m];
         } else {
-            coachPassangers[l].seat = seatingForTheRestReversed[k];
+            coachPassengers[l].seat = seatingForTheRestReversed[k];
         };
-        console.log(coachPassangers[l].first_name + " "  + coachPassangers[l].second_name + " A LA " + coachPassangers[l].seat)
+        console.log(coachPassengers[l].first_name + " "  + coachPassengers[l].second_name + " A LA " + coachPassengers[l].seat)
     };
 };
 
@@ -199,3 +201,6 @@ let printMap = () => {
         console.log(allPassangers[i].first_name[0] + "." + allPassangers[i].second_name[0] + "." + " " + allPassangers[i].seat)
     };
 };
+
+// package json
+// 
