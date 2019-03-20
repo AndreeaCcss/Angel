@@ -19,7 +19,7 @@ csv
     destination = data.flight_destination === process.argv[2];
     // forbidden objects
     if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){ 
-        // use different method watermelon 
+        // fix issue with watermelon 
         let newObj = data;
         selectedFlight.push(newObj)
         // object that stores all the passangers that match 
@@ -42,8 +42,9 @@ csv
     separatePassangers();
     seatingAppForBusiness();
     seatingAppForTheRest();
-    allPassangers = businessPassengers.concat(coachPassengers);
+    allPassengers = businessPassengers.concat(coachPassengers);
     printGreetings();
+    // make map
     printMap();
  });
 
@@ -87,19 +88,18 @@ function randomName(name, lastName) {
     return randomName;
 };
 
-// generate seats - in rows - unused
 let totalSeats = [];
 let row = [1, 2, 3, 4, 5, 6];
 function makeRows() {
     totalSeats.push(row);
-    for (i = 0; i < 20; i++){
-       row = row.map(x => x + 6)
-       totalSeats.push(row)
-    }
-    return totalSeats;
+   for (i = 0; i < 20; i++){
+      row = row.map(x => x + 6)
+      totalSeats.push(row)
+   }
+   return totalSeats;
 };
 
-// flight object - first four keys are unused
+// flight object - first three keys are unused
 let flight = {
     flight_code: "KL2345",
     flight_destination: "JFK",
@@ -192,18 +192,28 @@ let seatingAppForTheRest = () => {
 
 //before being told where to sit, passengers introduce themselves
 function printGreetings() {
-    for( i = 0; i < allPassangers.length; i ++ ) {
-        console.log(allPassangers[i].sayHello);
-        console.log(allPassangers[i].first_name + " "  + allPassangers[i].second_name + " A LA " + allPassangers[i].seat);
+    for( i = 0; i < allPassengers.length; i ++ ) {
+        console.log(allPassengers[i].sayHello);
+        console.log(allPassengers[i].first_name + " "  + allPassengers[i].second_name + " A LA " + allPassengers[i].seat);
     };
 };
 
-// print a map with the initials of each passangers and the corresponding seat
+// print a map with the seating of the flight
+// include initials of each passangers to the corresponding seat
 let printMap = () => {
-    for(i = 0; i < allPassangers.length; i++) {
-        console.log(allPassangers[i].first_name[0] + "." + allPassangers[i].second_name[0] + "." + " " + allPassangers[i].seat)
+    for(i = 0; i < flight.flight_columns.length; i++) {
+        for(n = 0; n < allPassengers.length; n++ ){
+            if(flight.flight_columns[i] == allPassengers[n].seat) {
+                flight.flight_columns[i] = allPassengers[n].first_name[0] + "." + allPassengers[n].second_name[0] + " " + flight.flight_columns[i];
+            };    
+        };
     };
+    var map = [], size = 6;
+    while (flight.flight_columns.length > 0)
+        map.push(flight.flight_columns.splice(0, size));
+    console.log(map);
 };
 
-
-// package json
+// evaluate seating situation for coach passengers 
+// also if there are too many that have purchsed business and flight doesnt allow, 
+// put them in normal seats
