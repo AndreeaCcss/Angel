@@ -38,15 +38,13 @@ csv
  .on("data", function (){
 })
  .on("end", function(){
-    addGreeting(); // pair with seating app
+    addGreeting();
     separatePassangers();
     seatingAppForBusiness();
     seatingAppForTheRest();
     allPassangers = businessPassengers.concat(coachPassengers);
+    printGreetings();
     printMap();
-    //console.log(allPassangers)
-    console.log(selectedFlight)
-   
  });
 
 // generate random message if passangers cant seat
@@ -58,7 +56,6 @@ function randomMessage() {
 };
 
 // passangers introduce themselves before being seated
-// maybe shouldnt be a key-val pair in the passangers objects
 function addGreeting(){
     // loop through all of the passagners and add the message in a new key value, with differencies if Spanish speaking
     for(i = 0; i < selectedFlight.length; i++){
@@ -67,13 +64,13 @@ function addGreeting(){
         let lastName = selectedFlight[i].second_name;
         let team = selectedFlight[i].favorite_team;
         if(spanishSpeaking(nationality) && team){
-            console.log(`Hola, soy ${randomName(name, lastName)} y soy del ${team}.`); 
+            selectedFlight[i].sayHello = `Hola, soy ${randomName(name, lastName)} y soy del ${team}.`; 
         } else if(spanishSpeaking(nationality)) {
-            console.log(`Hola, soy ${randomName(name, lastName)} y no me gusta el futbol.`);
+            selectedFlight[i].sayHello = `Hola, soy ${randomName(name, lastName)} y no me gusta el futbol.`;
         } else if (team){
-            console.log(`Hey, I'm ${name} and I support ${team}.`);
+            selectedFlight[i].sayHello = `Hey, I'm ${name} and I support ${team}.`;
         } else {
-            console.log(`Hey, I'm ${name}.`);
+           selectedFlight[i].sayHello = `Hey, I'm ${name}.`;
         };
     };
 };
@@ -156,7 +153,7 @@ let getMiddleSeatsOnly = () => {
         };
     };
     return middleSeatsOnly;
-}
+};
 getMiddleSeatsOnly();
 
 // separate the Business passangers from coach passangers
@@ -178,7 +175,6 @@ let seatingAppForBusiness = () => {
         if(businessPassengers[i].is_business === "true" ){
             businessPassengers[i].seat = seatingForBusinessWithoutMiddleSeat[j];
         };
-        console.log(businessPassengers[i].first_name + " "  + businessPassengers[i].second_name + " A LA " + businessPassengers[i].seat)
     };
 };
 
@@ -191,7 +187,14 @@ let seatingAppForTheRest = () => {
         } else {
             coachPassengers[l].seat = seatingForTheRestReversed[k];
         };
-        console.log(coachPassengers[l].first_name + " "  + coachPassengers[l].second_name + " A LA " + coachPassengers[l].seat)
+    };
+};
+
+//before being told where to sit, passengers introduce themselves
+function printGreetings() {
+    for( i = 0; i < allPassangers.length; i ++ ) {
+        console.log(allPassangers[i].sayHello);
+        console.log(allPassangers[i].first_name + " "  + allPassangers[i].second_name + " A LA " + allPassangers[i].seat);
     };
 };
 
@@ -202,5 +205,5 @@ let printMap = () => {
     };
 };
 
+
 // package json
-// 
