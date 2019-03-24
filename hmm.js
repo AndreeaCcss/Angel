@@ -17,13 +17,12 @@ csv
     };
     // destination receives input in the terminal, but must match the data file
     destination = data.flight_destination === process.argv[2];
-    // forbidden objects
-    if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){ 
-        // fix issue with watermelon 
+    //data.objects = data.objects.split("-");
+    if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){  
         let newObj = data;
         selectedFlight.push(newObj)
         // object that stores all the passangers that match 
-     } else if(data.objects.includes("parrot") && destination){
+    }else if(data.objects.includes("parrot") && destination){
         // exception - if they carry a parrot along with any of the forbidden objects -- allowed
         let nextObj = data
         selectedFlight.push(nextObj)
@@ -33,7 +32,7 @@ csv
      }; 
 })
  .on("data-invalid", function(){
-    console.log(randomMessage());
+    console.log(randomMessage()); 
 })
  .on("data", function (){
 })
@@ -44,7 +43,6 @@ csv
     seatingAppForTheRest();
     allPassengers = businessPassengers.concat(coachPassengers);
     printGreetings();
-    // make map
     printMap();
  });
 
@@ -171,9 +169,11 @@ let separatePassangers = () => {
 
 // assign seats to business passangers
 let seatingAppForBusiness = () => {
-    for(i = 0, j = 0; j < seatingForBusinessWithoutMiddleSeat.length, i < businessPassengers.length; j++, i++){
-        if(businessPassengers[i].is_business === "true" ){
+    for(i = 0, j = 0, k = 0; k < seatingForTheRestReversed.length, j < seatingForBusinessWithoutMiddleSeat.length, i < businessPassengers.length; j++, i++, k++){
+        if(seatingForBusinessWithoutMiddleSeat[j]){
             businessPassengers[i].seat = seatingForBusinessWithoutMiddleSeat[j];
+        } else {
+            businessPassengers[i].seat = seatingForTheRestReversed[k];
         };
     };
 };
@@ -181,7 +181,7 @@ let seatingAppForBusiness = () => {
 // assign seats to coach passangers
 let seatingAppForTheRest = () => {
     for(l = 0, k = 0, m = 0; k < seatingForTheRestReversed.length, m < middleSeatsOnly.length, l < coachPassengers.length; k++, l++, m++){
-        if(coachPassengers[l].is_business === "false" && coachPassengers[l].favorite_team === "RM" ){
+        if(coachPassengers[l].favorite_team === "RM" ){
             // if coach passangers are RM fans, must sit in middle seats
             coachPassengers[l].seat = middleSeatsOnly[m];
         } else {
@@ -204,16 +204,26 @@ let printMap = () => {
     for(i = 0; i < flight.flight_columns.length; i++) {
         for(n = 0; n < allPassengers.length; n++ ){
             if(flight.flight_columns[i] == allPassengers[n].seat) {
-                flight.flight_columns[i] = allPassengers[n].first_name[0] + "." + allPassengers[n].second_name[0] + " " + flight.flight_columns[i];
-            };    
+                flight.flight_columns[i] = `[${allPassengers[n].first_name[0]}. ${allPassengers[n].second_name[0]}.]`;
+            };
+        };   
+    };
+    for(i = 0; i < flight.flight_columns.length; i++) {
+        if(!flight.flight_columns[i].includes('.')) {
+            flight.flight_columns[i] = '[_____]'
         };
     };
     var map = [], size = 6;
     while (flight.flight_columns.length > 0)
         map.push(flight.flight_columns.splice(0, size));
-    console.log(map);
+    
+    var letters = "      A       B       C       D       E       F      ";
+    console.log(letters);
+    for (i = 0; i< map.length; i++){
+        if(i < 9){
+            console.log(` ${i+1} ${map[i]}`)
+        } else {
+            console.log(`${i+1} ${map[i]}`)
+        };
+    };    
 };
-
-// evaluate seating situation for coach passengers 
-// also if there are too many that have purchsed business and flight doesnt allow, 
-// put them in normal seats
