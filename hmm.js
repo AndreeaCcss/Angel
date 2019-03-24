@@ -17,7 +17,7 @@ csv
     };
     // destination receives input in the terminal, but must match the data file
     destination = data.flight_destination === process.argv[2];
-    //data.objects = data.objects.split("-");
+    data.objects = data.objects.split("-");
     if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){  
         let newObj = data;
         selectedFlight.push(newObj)
