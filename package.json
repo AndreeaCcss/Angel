@@ -1,0 +1,34 @@
+{
+  "name": "sitdownbehumble",
+  "version": "1.0.0",
+  "description": "Seating Application",
+  "main": "hmm.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreeaCcss/Angel.git"
+  },
+  "keywords": [
+    "javascript",
+    "jest",
+    "node",
+    "fast-csv",
+    "cli-colors"
+  ],
+  "author": "Andreea Cucos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndreeaCcss/Angel/issues"
+  },
+  "homepage": "https://github.com/AndreeaCcss/Angel#readme",
+  "dependencies": {
+    "jest": "^24.5.0"
+  },
+  "devDependencies": {
+    "cli-color": "^1.4.0",
+    "cli-colors": "0.0.2",
+    "fast-csv": "^2.4.1"
+  }
+}
