@@ -1,5 +1,6 @@
 const csv = require('fast-csv');
 const fs = require('fs');
+var clc = require("cli-color");
 const stream = fs.createReadStream("data2.csv");
 
 var selectedFlight = [];
@@ -17,6 +18,7 @@ csv
     };
     // destination receives input in the terminal, but must match the data file
     destination = data.flight_destination === process.argv[2];
+    data.objects = data.objects.toLowerCase();
     data.objects = data.objects.split("-");
     if(!data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && destination && data.nationality && data.first_name && data.second_name){  
         let newObj = data;
@@ -27,12 +29,13 @@ csv
         let nextObj = data
         selectedFlight.push(nextObj)
         // exception - if they carry only a sombrero and are mexicans going to JFK -- allowed
-     } else if(data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && data.nationality == "Mexican" && destination ){
+    } else if(data.objects.includes("sombrero") && !data.objects.includes("firearm") && !data.objects.includes("water") && !data.objects.includes("soap") && !data.objects.includes("batteries") && data.nationality == "Mexican" && destination ){
         selectedFlight.push(data);
-     }; 
+    }; 
+
 })
  .on("data-invalid", function(){
-    console.log(randomMessage()); 
+    console.log(clc.green.bold(randomMessage())); 
 })
  .on("data", function (){
 })
@@ -47,7 +50,7 @@ csv
  });
 
 // generate random message if passangers cant seat
-function randomMessage() {
+let randomMessage = () => {
     let cantSeat = [ 'A MAMARLA!', 'TU FUERA!', 'AQUI NO!'];
     let randomNumber = Math.floor(Math.random()*cantSeat.length);
     let randomMessage = cantSeat[randomNumber];
@@ -55,7 +58,7 @@ function randomMessage() {
 };
 
 // passangers introduce themselves before being seated
-function addGreeting(){
+let addGreeting = () => {
     // loop through all of the passagners and add the message in a new key value, with differencies if Spanish speaking
     for(i = 0; i < selectedFlight.length; i++){
         let nationality = selectedFlight[i].nationality;
@@ -63,18 +66,18 @@ function addGreeting(){
         let lastName = selectedFlight[i].second_name;
         let team = selectedFlight[i].favorite_team;
         if(spanishSpeaking(nationality) && team){
-            selectedFlight[i].sayHello = `Hola, soy ${randomName(name, lastName)} y soy del ${team}.`; 
+            selectedFlight[i].sayHello = clc.green("Hola, soy ") + clc.cyanBright.bold(randomName(name, lastName)) + clc.green(" y soy del ") + clc.yellow(team) + clc.green("."); 
         } else if(spanishSpeaking(nationality)) {
-            selectedFlight[i].sayHello = `Hola, soy ${randomName(name, lastName)} y no me gusta el futbol.`;
+            selectedFlight[i].sayHello = clc.green("Hola, soy ") + clc.cyanBright.bold(randomName(name, lastName)) + clc.green(" y no me gusta el futbol.");
         } else if (team){
-            selectedFlight[i].sayHello = `Hey, I'm ${name} and I support ${team}.`;
+            selectedFlight[i].sayHello = clc.green("Hey, I'm " ) + clc.cyanBright.bold(name) + clc.green(" and I support ") + clc.yellow(team) + clc.green(".");
         } else {
-           selectedFlight[i].sayHello = `Hey, I'm ${name}.`;
+           selectedFlight[i].sayHello = clc.green("Hey, I'm ") + clc.cyanBright.bold(name) + clc.green(".");
         };
     };
 };
 
-function spanishSpeaking (nationality) {
+let spanishSpeaking  = nationality => {
     return (nationality == "Mexican") || (nationality == "Spanish") || (nationality == "Colombian");
 };
 
@@ -99,9 +102,6 @@ function makeRows() {
 
 // flight object - first three keys are unused
 let flight = {
-    flight_code: "KL2345",
-    flight_destination: "JFK",
-    plane_model: 'A380',
     flight_seats: makeRows(),
  };
 
@@ -140,9 +140,11 @@ let seatingForBusinessFunction = () => {
 };
 seatingForBusinessFunction();
 
-// rest of the passagners need to seat from front to back
+// rest of the passagners must seat from front to back
 seatingForTheRest = flight.flight_columns.slice(18);
 seatingForTheRestReversed = seatingForTheRest.reverse();
+
+/* 
 middleSeatsOnly = []; 
 let getMiddleSeatsOnly = () => {
     for(x = 0; x < seatingForTheRestReversed.length; x++){
@@ -153,6 +155,7 @@ let getMiddleSeatsOnly = () => {
     return middleSeatsOnly;
 };
 getMiddleSeatsOnly();
+*/
 
 // separate the Business passangers from coach passangers
 let separatePassangers = () => {
@@ -178,27 +181,26 @@ let seatingAppForBusiness = () => {
     };
 };
 
-// assign seats to coach passangers
 let seatingAppForTheRest = () => {
-    for(l = 0, k = 0, m = 0; k < seatingForTheRestReversed.length, m < middleSeatsOnly.length, l < coachPassengers.length; k++, l++, m++){
-        if(coachPassengers[l].favorite_team === "RM" ){
-            // if coach passangers are RM fans, must sit in middle seats
-            coachPassengers[l].seat = middleSeatsOnly[m];
-        } else {
-            coachPassengers[l].seat = seatingForTheRestReversed[k];
-        };
+    for(l = 0, k = 0; k < seatingForTheRestReversed.length, l < coachPassengers.length; l++, k++){
+        coachPassengers[l].seat = seatingForTheRestReversed[k];
     };
 };
 
 //before being told where to sit, passengers introduce themselves
 function printGreetings() {
     for( i = 0; i < allPassengers.length; i ++ ) {
-        console.log(allPassengers[i].sayHello);
-        console.log(allPassengers[i].first_name + " "  + allPassengers[i].second_name + " A LA " + allPassengers[i].seat);
+        if(allPassengers[i].seat == undefined) {
+            console.log(allPassengers[i].sayHello);
+            console.log(clc.cyanBright.bold(allPassengers[i].first_name) + " "  + clc.cyanBright.bold(allPassengers[i].second_name) + clc.green(", on the next flight!"))
+        } else {
+            console.log(allPassengers[i].sayHello);
+            console.log(clc.cyanBright.bold(allPassengers[i].first_name) + " "  + clc.cyanBright.bold(allPassengers[i].second_name) + clc.green (" A LA ") + clc.yellowBright.bold(allPassengers[i].seat) + clc.green("."));
+        };
     };
 };
 
-// print a map with the seating of the flight
+// print a map with the seats of the flight
 // include initials of each passangers to the corresponding seat
 let printMap = () => {
     for(i = 0; i < flight.flight_columns.length; i++) {
