@@ -35,7 +35,7 @@ csv
 
 })
  .on("data-invalid", function(){
-  //  console.log(clc.green.bold(randomMessage())); 
+    console.log(clc.green.bold(randomMessage())); 
 })
  .on("data", function (){
 })
@@ -118,7 +118,7 @@ function makeColumns() {
         let columnD = items[3] + "D";
         let columnE = items[4] + "E";
         let columnF = items[5] + "F";
-        columns.push(columnA,columnB, columnC, columnD, columnE, columnF);
+        columns.push(columnA,columnB, columnC, columnD, columnE, columnF);  
     };
     return columns;
 };
@@ -163,7 +163,7 @@ let separatePassangers = () => {
         } else if(selectedFlight[i].is_business === "false"){
             let coachPass = selectedFlight[i];
             coachPassengers.push(coachPass);
-        };'
+        };
     }; 
 };
 
@@ -226,3 +226,6 @@ let printMap = () => {
         };
     };    
 };
+
+exports.makeRows = makeRows;
+exports.totalSeats = totalSeats;
