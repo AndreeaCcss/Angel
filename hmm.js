@@ -1,6 +1,6 @@
 const csv = require('fast-csv');
 const fs = require('fs');
-var clc = require("cli-color");
+const clc = require("cli-color");
 const stream = fs.createReadStream("data2.csv");
 
 var selectedFlight = [];
@@ -35,7 +35,7 @@ csv
 
 })
  .on("data-invalid", function(){
-    console.log(clc.green.bold(randomMessage())); 
+  //  console.log(clc.green.bold(randomMessage())); 
 })
  .on("data", function (){
 })
@@ -90,11 +90,11 @@ function randomName(name, lastName) {
 };
 
 let totalSeats = [];
-let row = [1, 2, 3, 4, 5, 6];
+let row = [1, 1, 1, 1, 1, 1];
 function makeRows() {
     totalSeats.push(row);
    for (i = 0; i < 20; i++){
-      row = row.map(x => x + 6)
+      row = row.map(x => x + 1)
       totalSeats.push(row)
    }
    return totalSeats;
@@ -144,7 +144,6 @@ seatingForBusinessFunction();
 seatingForTheRest = flight.flight_columns.slice(18);
 seatingForTheRestReversed = seatingForTheRest.reverse();
 
-/* 
 middleSeatsOnly = []; 
 let getMiddleSeatsOnly = () => {
     for(x = 0; x < seatingForTheRestReversed.length; x++){
@@ -155,7 +154,6 @@ let getMiddleSeatsOnly = () => {
     return middleSeatsOnly;
 };
 getMiddleSeatsOnly();
-*/
 
 // separate the Business passangers from coach passangers
 let separatePassangers = () => {
@@ -166,7 +164,7 @@ let separatePassangers = () => {
         } else if(selectedFlight[i].is_business === "false"){
             let coachPass = selectedFlight[i];
             coachPassengers.push(coachPass);
-        };
+        };'
     }; 
 };
 
@@ -229,3 +227,6 @@ let printMap = () => {
         };
     };    
 };
+
+exports.makeRows = makeRows;
+exports.totalSeats = totalSeats;
