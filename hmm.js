@@ -24,7 +24,7 @@ csv
         let newObj = data;
         selectedFlight.push(newObj)
         // object that stores all the passangers that match 
-    }else if(data.objects.includes("parrot") && destination){
+    } else if(data.objects.includes("parrot") && destination){
         // exception - if they carry a parrot along with any of the forbidden objects -- allowed
         let nextObj = data
         selectedFlight.push(nextObj)
@@ -96,14 +96,14 @@ function makeRows() {
    for (i = 0; i < 20; i++){
       row = row.map(x => x + 1)
       totalSeats.push(row)
-   }
+   };
    return totalSeats;
 };
 
 // flight object - first three keys are unused
 let flight = {
     flight_seats: makeRows(),
- };
+};
 
 let seats = flight.flight_seats;
 
@@ -119,7 +119,6 @@ function makeColumns() {
         let columnE = items[4] + "E";
         let columnF = items[5] + "F";
         columns.push(columnA,columnB, columnC, columnD, columnE, columnF);
-       
     };
     return columns;
 };
@@ -227,6 +226,3 @@ let printMap = () => {
         };
     };    
 };
-
-exports.makeRows = makeRows;
-exports.totalSeats = totalSeats;
