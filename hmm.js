@@ -228,4 +228,10 @@ let printMap = () => {
 };
 
 exports.makeRows = makeRows;
+exports.printMap = printMap;
 exports.totalSeats = totalSeats;
+exports.spanishSpeaking = spanishSpeaking;
+exports.randomMessage = randomMessage;
+exports.flight = flight;
+exports.makeColumns = makeColumns;
+exports.columns = columns;
